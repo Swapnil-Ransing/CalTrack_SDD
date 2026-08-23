@@ -18,8 +18,8 @@ Invoked as: `/phase-build` (no arguments — always operates on whatever
 2. Update `progress.md` status to `building`.
 3. Work through `tasks.md` **one task at a time**, in order:
    - Implement the task.
-   - Write tests for it immediately (unit tests at minimum; integration tests where the
-     task crosses the API boundary). Don't defer all testing to the end.
+   - Write tests for it immediately (unit tests at minimum; `AppTest`-based tests where the
+     task touches a page/widget). Don't defer all testing to the end.
    - Run just this task's tests before moving to the next task.
    - Check the task off in `tasks.md`.
 4. Do not scope-creep into other phases' work, even if you notice something related that's

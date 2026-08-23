@@ -7,8 +7,11 @@ voice-first, highly polished web app.
 ## Priorities, in order
 1. **Extremely user friendly.** Every flow should take the fewest taps/words possible.
    Voice logging is the primary input method, not a bolt-on feature.
-2. **Exotic, delightful UI.** Not a generic CRUD dashboard — animated, considered, feels
-   crafted. Mobile-first (most logging happens on a phone).
+2. **Push the UI as far as Streamlit allows.** Streamlit is server-rendered Python widgets,
+   not a custom app — but within that constraint, invest in custom theming/CSS and
+   component libraries (charts, light animation) so it feels considered rather than a
+   default CRUD dashboard. Mobile-first (most logging happens on a phone), accepting
+   Streamlit's layout ceiling.
 3. **Correctness of health data.** Calorie/macro estimates and logs must be traceable —
    store the raw model output alongside the parsed structured result.
 4. **Analytics dashboard** (trends, macro breakdown) comes after solo tracking is solid.
@@ -26,6 +29,8 @@ voice-first, highly polished web app.
 - Individual trying to track calories/water/weight with minimal daily effort.
 
 ## Non-goals (for now)
-- Native mobile app (web app, mobile-responsive/PWA is enough).
+- Native mobile app (web app, mobile-responsive is enough).
 - Wearable integrations.
 - Meal recommendation engine (future enhancement, stays future for now).
+- Pixel-perfect custom UI (Next.js/Tailwind-level polish) — deliberately traded away for
+  Streamlit's zero-ops deployment (see `tech.md`).

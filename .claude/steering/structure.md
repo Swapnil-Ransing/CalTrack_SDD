@@ -4,22 +4,24 @@
 
 ```
 /
-├── .claude/                 # this scaffold
-├── frontend/                 # Next.js app
-│   ├── app/
-│   ├── components/
-│   ├── lib/
-│   └── tests/
-├── backend/                  # FastAPI app
-│   ├── app/
-│   │   ├── api/              # route handlers
-│   │   ├── models/           # SQLAlchemy models
-│   │   ├── schemas/           # Pydantic schemas (incl. Gemini response schemas)
-│   │   ├── services/          # gemini client, calculations, etc.
-│   │   └── core/              # config, db session, auth
-│   ├── alembic/
-│   └── tests/
-├── docker-compose.yml
+├── .claude/                   # this scaffold
+├── .streamlit/
+│   ├── config.toml            # theme
+│   └── secrets.toml.example   # documents required secret keys (real file is gitignored)
+├── app.py                     # entrypoint / home page
+├── pages/                     # Streamlit auto-discovers pages here
+│   ├── 1_💧_Water.py
+│   ├── 2_🍽️_Meals.py
+│   └── ...                    # numbered + emoji-prefixed for sidebar order/icons
+├── services/                  # gemini client, calorie calc, db access
+├── models/                    # SQLAlchemy models
+├── schemas/                   # Pydantic schemas (incl. Gemini response schemas)
+├── core/                      # config (st.secrets wrapper), db session, auth helpers
+├── components/                # reusable UI helpers (cards, CSS injection)
+├── alembic/
+├── tests/
+├── requirements.txt
+├── docker-compose.yml         # local Postgres for dev
 └── docs/
     └── deployment.md
 ```
@@ -40,5 +42,5 @@ once it has shipped — if scope changes later, that's a new phase.
 
 ## Naming
 - Python: `snake_case` modules/functions, `PascalCase` classes
-- TypeScript/React: `PascalCase` components, `camelCase` functions/vars
+- Streamlit page files: `<order>_<emoji>_<Title>.py` (e.g. `2_🍽️_Meals.py`)
 - DB tables: `snake_case`, plural (e.g. `nutrition_log`, `water_log`, …)

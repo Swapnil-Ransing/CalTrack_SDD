@@ -6,15 +6,15 @@ picks the next `pending` phase unless told otherwise.
 
 | # | Phase | Status |
 |---|-------|--------|
-| 01 | Project scaffolding (Next.js + FastAPI skeletons, Docker Compose, Postgres + Alembic init, CI) | pending |
+| 01 | Project scaffolding (Streamlit app skeleton, local Docker Postgres + Supabase Postgres, Alembic init, CI) | pending |
 | 02 | Auth & user profiles (signup/login, health metrics profile, password hashing) | pending |
 | 03 | Manual meal logging + Gemini calorie/macro calculation (text input) | pending |
-| 04 | Voice logging (audio upload → Gemini structured parse → routes to meal/water/weight/activity) | pending |
+| 04 | Voice logging (`st.audio_input` capture → Gemini structured parse → routes to meal/water/weight/activity) | pending |
 | 05 | Water intake tracking (quick-add, custom, daily goal, hydration viz) | pending |
 | 06 | Weight & activity logging (walk/gym, cheat day flag) | pending |
-| 07 | Analytics dashboard (trends, macros breakdown, daily/weekly/monthly) | pending |
-| 08 | UI polish pass (animation, empty states, error states, accessibility) | pending |
-| 09 | Deployment (Oracle Free VM + Coolify, production Postgres, SSL, backups) | pending |
+| 07 | Analytics dashboard (trends, macros breakdown, daily/weekly/monthly, Plotly charts) | pending |
+| 08 | UI polish pass (custom theme/CSS, animation, empty states, error states, accessibility) | pending |
+| 09 | Deployment (Streamlit Community Cloud, Supabase secrets, GitHub auto-deploy) | pending |
 
 ## Status values
 `pending` → `spec-in-progress` → `spec-approved` → `building` → `verified` → `shipped`

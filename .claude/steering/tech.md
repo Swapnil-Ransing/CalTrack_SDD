@@ -3,66 +3,94 @@
 These are settled decisions. Don't re-litigate them inside a phase — if something needs to
 change, update this file first, in its own small commit, with the reason noted.
 
-## Frontend
-- **Next.js** (App Router) + TypeScript
-- **Tailwind CSS** + **shadcn/ui** for components
-- **Framer Motion** for animation/micro-interactions
-- Charts: recharts or visx for analytics visualizations
-- Mobile-first responsive layout; installable as a PWA
+## App
+- **Streamlit** (Python) — single app, no separate frontend/backend split. UI and logic
+  live in the same process.
+- Multi-page app via Streamlit's `pages/` convention (numbered, emoji-prefixed filenames
+  control sidebar order/icons — see `structure.md`).
+- Voice capture via the built-in **`st.audio_input`** widget (records mic audio directly in
+  the browser) — no third-party JS component and no separate upload endpoint needed; the
+  page's callback gets the audio bytes and calls the Gemini service module directly.
+- Pydantic models for validation and for the Gemini structured-output schemas (shared shape
+  where possible).
+- SQLAlchemy ORM against Postgres (see Database below) — one dialect only, no
+  SQLite-compatibility constraints on the models.
 
-## Backend
-- **FastAPI** (Python), async
-- Pydantic models for request/response validation and for the Gemini structured-output
-  schemas (shared shape where possible)
-- SQLAlchemy ORM — models must work against both SQLite (local dev) and Postgres (prod)
-  via the same models; no dialect-specific SQL in application code
+## UI polish
+Priority is to push Streamlit as far as it goes (product.md #2) — Streamlit is
+server-rendered Python widgets, not a custom app, but invest real effort within that:
+- **Theme** via `.streamlit/config.toml` (primary color, font, base) as the first layer.
+- **Custom CSS** injected through a shared `inject_css()` helper reading a checked-in `.css`
+  file, for anything `config.toml` can't reach (cards, spacing, micro-animations).
+- **Component libraries** allowed for polish, added per-phase as needed and noted in that
+  phase's `design.md` — e.g. `streamlit-extras` (UI helpers), `streamlit-lottie`
+  (animations for confirmations/empty states).
+- **Charts:** **Plotly** (`st.plotly_chart`) for analytics — more customizable and
+  interactive than Streamlit's native chart types.
+- Mobile-first intent stays, but accept Streamlit's layout ceiling — test each polish pass
+  at a phone-width viewport rather than aiming for app-native feel.
 
 ## Database
-- **PostgreSQL** in production
-- Core SQLAlchemy models: `users`, `nutrition_log`, `daily_summary`, `settings`, `water_log`
-- Alembic for migrations — every phase that changes the schema ships a migration
+- **Supabase** (hosted Postgres) in production.
+- **Local Postgres via Docker Compose** for dev — same engine as prod, so no
+  dialect-switching logic anywhere in the app.
+- Core tables: `users`, `nutrition_log`, `daily_summary`, `settings`, `water_log`.
+- Alembic for migrations — every phase that changes the schema ships a migration, run
+  against local Docker Postgres in dev and against Supabase's **direct** connection string
+  (not the pooled/pgbouncer one) for the deployed database.
+- Using Supabase purely as a hosted Postgres instance via SQLAlchemy — not its client SDK,
+  Auth, Storage, or RLS features. Phase 02's auth (password hashing) stays app-owned, to
+  keep one code path between local and prod.
 
 ## Voice + AI
 - **Google Gemini API** for voice understanding:
-  - Audio uploaded directly to Gemini (no separate transcription step)
+  - Audio captured via `st.audio_input`, sent directly to Gemini (no separate
+    transcription step)
   - `response_schema` constrains output to structured JSON: an array of typed entries
     (`meal` | `water` | `weight` | `activity`), each with its own fields
   - Store the raw model response alongside parsed fields for auditability
 - Keep the Gemini client isolated behind a service module (`services/voice_parser.py`) so
-  the model/provider can be swapped without touching route handlers
+  the model/provider can be swapped without touching page code.
 
 ## Secrets & environment variables
-- All secrets (DB connection string, `GEMINI_API_KEY`, auth signing secret, etc.) live in
-  `.env` files that are **never committed**. Each app ships a checked-in `.env.example`
-  listing required variable names with placeholder values.
-- Backend: loaded via Pydantic `Settings` (`backend/app/core/config.py`), sourced from
-  `backend/.env` in local dev and from Coolify's environment injection in prod.
-- Frontend: Next.js `.env.local` for local dev (server-only secrets use unprefixed names;
-  anything needed client-side must use the `NEXT_PUBLIC_` prefix — never put real secrets
-  there).
-- Whichever phase first needs a new secret adds it to `.env.example` and documents it in
-  that phase's `design.md`.
+- Streamlit's own secrets mechanism — **not** `.env` files:
+  - Local dev: `.streamlit/secrets.toml` (gitignored). A checked-in
+    `.streamlit/secrets.toml.example` lists required keys with placeholder values.
+  - Deployed: the same keys are set in the Streamlit Community Cloud app's
+    **Settings → Secrets** panel (TOML format) — a manual step in the Cloud UI per app;
+    Claude cannot set this remotely.
+  - Access in code via `st.secrets["KEY_NAME"]`.
+  - Required keys (grows per phase): `GEMINI_API_KEY`, `SUPABASE_DB_URL`, an auth signing
+    secret (added in phase 02).
+- Whichever phase first needs a new secret adds it to `.streamlit/secrets.toml.example` and
+  documents it in that phase's `design.md`.
 
 ## CI
 - **GitHub Actions.** Workflow(s) live in `.github/workflows/`, created as part of phase 01.
-- On every PR: lint + type-check + full test suite (backend and frontend) — the same checks
-  `/phase-verify` runs locally, so CI is a backstop, not a separate bar.
+- On every PR: lint (`ruff`) + type-check (`mypy`) + full `pytest` suite — the same checks
+  `/phase-verify` runs locally, so CI is a backstop, not a separate bar. No image build/push
+  step — Streamlit Community Cloud builds directly from the repo on deploy.
 - CI must pass before a PR is merged (branch protection on the default branch), but Claude
   does not configure branch protection itself — that's a one-time human step in the GitHub
   repo settings.
 
 ## Deployment
-- Self-hosted on an **Oracle Cloud Always Free** ARM VM (2 OCPU / 12 GB RAM)
-- **Coolify** (open source, self-hosted) manages Git-push deploys, SSL, and the managed
-  Postgres instance
-- All Docker images must be built for `linux/arm64`
-- No paid infra. If Oracle capacity can't be provisioned, fall back is noted in the repo's
-  deployment doc but is not the default target
+- **Streamlit Community Cloud** (free): connect the GitHub repo, point it at the app's
+  entrypoint, deploy from `main` — every merge to `main` auto-redeploys.
+- Secrets configured once in the Cloud app's dashboard (see Secrets above); no Docker, no
+  VM, no reverse proxy, no SSL management to maintain.
+- Known constraints to design around: the free tier sleeps an inactive app (a few seconds'
+  cold start on the next visit) and caps resources at roughly 1 GB RAM per app — fine for
+  this app's scale, but keep Gemini calls and dataframe work mindful of that ceiling.
 
 ## Testing
-- Backend: pytest, with a test DB (SQLite in-memory or throwaway Postgres schema)
-- Frontend: Vitest/Playwright for component and e2e tests where a phase touches UI
-- Every phase's `/phase-verify` gate must run the full suite, not just the new phase's tests
-- **Coverage threshold: 80% line coverage**, measured per-app (backend via `pytest --cov`,
-  frontend via Vitest coverage) on the code a phase adds or changes. `/phase-verify` flags
-  (does not silently pass) any phase that lands under this bar.
+- `pytest` for all business logic (`services/`, calculations, Gemini parsing), against a
+  throwaway Postgres schema (Dockerized) as the test DB.
+- **`streamlit.testing.v1.AppTest`** (built into Streamlit) for page/widget-level tests —
+  runs a page script and drives its widgets without a browser. This replaces
+  Vitest/Playwright as the default for UI logic.
+- Playwright is allowed for a small number of true end-to-end smoke tests if a phase's
+  `design.md` calls for it, but `AppTest` is the default.
+- Every phase's `/phase-verify` gate must run the full suite, not just the new phase's tests.
+- **Coverage threshold: 80% line coverage**, measured via `pytest --cov` on the code a phase
+  adds or changes. `/phase-verify` flags (does not silently pass) any phase under this bar.

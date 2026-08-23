@@ -15,10 +15,10 @@ failure it reported).
 1. Review the diff (`git status` / `git diff`) to confirm only this phase's intended files
    changed — no stray files, no secrets, no debug prints.
 2. Stage and commit with Conventional Commits, split into logical commits rather than one
-   giant commit where it makes sense (e.g. `spec(05): add requirements and design`,
-   `feat(05): implement voice upload endpoint`, `test(05): add voice parser tests`). If the
-   spec commit already happened in `/phase-start`, just add the implementation/test commits
-   here.
+   giant commit where it makes sense (e.g. `spec(04): add requirements and design`,
+   `feat(04): implement voice capture and parsing`, `test(04): add voice parser tests`). If
+   the spec commit already happened in `/phase-start`, just add the implementation/test
+   commits here.
 3. Push the branch: `git push -u origin feature/phase-<NN>-<slug>`.
 4. Open a PR (`gh pr create`) targeting the default branch. PR description should be
    generated from the phase's `requirements.md` (what/why), `design.md` (how), and a

@@ -8,8 +8,8 @@ for individuals, built as a modern web app.
 See `.claude/steering/product.md` for the full product intent.
 
 ## Stack
-See `.claude/steering/tech.md` for the authoritative, current stack decisions: a Next.js +
-FastAPI app.
+See `.claude/steering/tech.md` for the authoritative, current stack decisions: a single
+Streamlit (Python) app on Supabase Postgres, deployed to Streamlit Community Cloud.
 
 ## How we develop here: phase-wise, not one-shot
 
@@ -45,8 +45,8 @@ phase; do not start a new one.
 
 ## Conventions
 - Branch naming: `feature/phase-<NN>-<slug>` (e.g. `feature/phase-04-voice-logging`)
-- Commit messages: Conventional Commits — `spec(03): add requirements`, `feat(03): implement
-  audio upload endpoint`, `test(03): add voice parser unit tests`
+- Commit messages: Conventional Commits — `spec(04): add requirements`, `feat(04): implement
+  voice capture and parsing`, `test(04): add voice parser unit tests`
 - Every phase must ship with tests. No phase is "done" without a passing `/phase-verify`.
 - Keep the database schema additive across phases where possible — prefer new migrations
   over destructive changes to earlier phases' tables.

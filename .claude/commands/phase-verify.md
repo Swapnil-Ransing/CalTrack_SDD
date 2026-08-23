@@ -10,20 +10,20 @@ Invoked as: `/phase-verify` (no arguments).
 
 ## Do this, in order
 
-1. Run the **entire** backend test suite (pytest), not just this phase's new tests — a
-   phase can silently break an earlier one.
-2. Run the **entire** frontend test suite (Vitest/Playwright) if this phase touched the UI.
-3. Run lint (`ruff`/`eslint`) and type-check (`mypy`/`tsc --noEmit`) across the whole repo.
-4. Check coverage on the code this phase added/changed — flag (don't silently accept) if
+1. Run the **entire** `pytest` suite (business logic, services, and `AppTest` page/widget
+   tests together), not just this phase's new tests — a phase can silently break an earlier
+   one.
+2. Run lint (`ruff`) and type-check (`mypy`) across the whole repo.
+3. Check coverage on the code this phase added/changed — flag (don't silently accept) if
    it's materially under the rest of the codebase's baseline.
-5. If anything fails **and the failure is caused by this phase**, fix it, re-run, and repeat
+4. If anything fails **and the failure is caused by this phase**, fix it, re-run, and repeat
    until green. If a failure looks pre-existing and unrelated to this phase, stop and report
    it to the human rather than fixing it here — that belongs to whichever phase caused it.
-6. Report a clear pass/fail summary: tests run, tests passed, lint result, type-check
+5. Report a clear pass/fail summary: tests run, tests passed, lint result, type-check
    result, coverage note.
-7. On a full pass, update `progress.md` status to `verified` and the roadmap row to
+6. On a full pass, update `progress.md` status to `verified` and the roadmap row to
    `verified`, with a log line.
-8. On failure that you couldn't resolve, update `progress.md` status to `verify-failed`
+7. On failure that you couldn't resolve, update `progress.md` status to `verify-failed`
    with a log line describing what's blocking, and stop — do not proceed to `/phase-ship`.
 
 ## Stop here

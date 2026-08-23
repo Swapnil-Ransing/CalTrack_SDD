@@ -18,10 +18,10 @@ Invoked as: `/phase-start <phase-number-or-slug>` (e.g. `/phase-start 03` or
 4. Create `.claude/specs/phases/<NN>-<slug>/` with three files:
    - **requirements.md** — user stories + acceptance criteria for this feature ONLY. Pull
      from `product.md`. Be concrete and testable ("given X, when Y, then Z"), not vague.
-   - **design.md** — technical design for this feature ONLY: API endpoints, DB schema
-     changes (with an Alembic migration plan if needed), component structure, and how it
-     integrates with what earlier phases already built. Respect `tech.md` and
-     `structure.md`. Call out any open questions for the human.
+   - **design.md** — technical design for this feature ONLY: Streamlit pages/widgets
+     touched, service-module changes, DB schema changes (with an Alembic migration plan if
+     needed), and how it integrates with what earlier phases already built. Respect
+     `tech.md` and `structure.md`. Call out any open questions for the human.
    - **tasks.md** — numbered, small, independently testable tasks, each phrased so
      `/phase-build` can implement and test it one at a time. Include a task for tests
      themselves, not just implementation.
