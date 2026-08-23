@@ -25,6 +25,7 @@ jobs:
 
     env:
       DATABASE_URL: postgresql+psycopg://postgres:postgres@localhost:5432/postgres
+      AUTH_SECRET_KEY: ci-test-secret-key-not-for-production-use
 
     steps:
       - uses: actions/checkout@v4
