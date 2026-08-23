@@ -6,7 +6,7 @@ picks the next `pending` phase unless told otherwise.
 
 | # | Phase | Status |
 |---|-------|--------|
-| 01 | Project scaffolding (Streamlit app skeleton, local Docker Postgres + Supabase Postgres, Alembic init, CI) | spec-approved |
+| 01 | Project scaffolding (Streamlit app skeleton, local Docker Postgres + Supabase Postgres, Alembic init, CI) | shipped |
 | 02 | Auth & user profiles (signup/login, health metrics profile, password hashing) | pending |
 | 03 | Manual meal logging + Gemini calorie/macro calculation (text input) | pending |
 | 04 | Voice logging (`st.audio_input` capture → Gemini structured parse → routes to meal/water/weight/activity) | pending |
