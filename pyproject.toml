@@ -1,0 +1,17 @@
+[tool.ruff]
+line-length = 100
+exclude = [".venv", "alembic/versions"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+
+[tool.mypy]
+python_version = "3.11"
+exclude = ["\\.venv", "alembic/versions"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+addopts = "--cov=core --cov=models --cov=schemas --cov=services --cov=components --cov-report=term-missing"
+
+[tool.coverage.run]
+omit = [".venv/*", "alembic/*", "tests/*"]
