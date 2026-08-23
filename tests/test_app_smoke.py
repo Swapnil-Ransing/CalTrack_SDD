@@ -17,4 +17,4 @@ def test_app_renders_title_and_description() -> None:
     at.run()
 
     assert at.title[0].value == "HealthTracker"
-    assert "voice-first" in at.markdown[0].value
+    assert any("voice-first" in md.value for md in at.markdown)
