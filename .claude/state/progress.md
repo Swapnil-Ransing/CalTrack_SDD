@@ -2,14 +2,12 @@
 
 Claude: read this first, every session. Update it at the end of every phase command.
 
-- **Active phase:** 02 — Auth & user profiles
-- **Branch:** feature/phase-02-auth-user-profiles
-- **Status:** verified (branch pushed, PR not yet opened — see log)
-- **Last command run:** `/phase-ship`
-- **Next action:** human opens the PR (body in `pr-body-phase-02.md`) using
-  `feature/phase-02-auth-user-profiles` → `main`, reviews, and merges; then re-run
-  `/phase-ship` context isn't needed again — just tell Claude it's merged so roadmap/progress
-  can be marked `shipped`
+- **Active phase:** none
+- **Branch:** none (feature/phase-02-auth-user-profiles merged into main via PR #2)
+- **Status:** —
+- **Last command run:** human merged PR #2
+- **Next action:** run `/phase-start` to begin phase 03 (manual meal logging + Gemini
+  calorie/macro calculation) when ready
 
 ## Log
 (Claude appends a one-line entry here after every phase command runs, e.g.
@@ -25,3 +23,4 @@ Claude: read this first, every session. Update it at the end of every phase comm
 2026-08-23 — /phase-build — implemented all 12 tasks: dependencies (bcrypt, itsdangerous, extra-streamlit-components), AUTH_SECRET_KEY config wiring, users table (model + Alembic migration, verified reversible), Pydantic schemas, password hashing + signed session tokens (services/auth_service.py), user_service.py (create/authenticate/get/update, duplicate-email handling), core/auth.py session glue, app.py auth-gate rewrite, pages/0_👤_Profile.py. Found and fixed three real bugs during manual + AppTest verification: (1) core/config.py's Streamlit-secrets-vs-env-var resolver read st.secrets off disk even outside a live Streamlit session, breaking test isolation once a real local secrets.toml existed — fixed via get_script_run_ctx() check; (2) CookieManager.get() reads a cookies snapshot frozen at construction time, so a session restored after refresh looked permanently logged out — fixed by using get_all() (re-invokes the component) instead, plus an explicit `_explicitly_logged_out` session flag so an immediate post-logout rerun doesn't read back a not-yet-propagated stale cookie value; (3) CookieManager.delete() raises KeyError if the cookie was never fetched into its local dict (e.g. a session restored purely from session_state) — guarded with a get_all() check first. Verified end-to-end in a real browser: signup, login, session persists across a hard refresh, logout persists across a hard refresh. Full local gate: 54/54 tests passing, 98% coverage, ruff clean, mypy clean. Status set to built.
 2026-08-23 — /phase-verify — full gate re-run from a clean state: pytest 54/54 passed (including all phase 01 tests — no regressions), ruff clean (whole repo), mypy clean (27 source files, whole repo), coverage 98% on this phase's code (core/auth.py, models/user.py, schemas/user.py, services/auth_service.py, services/user_service.py) — above the 80% threshold and above phase 01's 88% baseline. No leftover test data in the users table. No pre-existing failures found. Status set to verified.
 2026-08-23 — /phase-ship — reviewed diff (no stray files, no secrets, no debug output). Committed as 3 conventional commits (spec(02), feat(02), test(02)) and pushed feature/phase-02-auth-user-profiles to origin. Could not open the PR automatically — gh CLI is not installed in this environment (same as phase 01). PR body delivered to the human as pr-body-phase-02.md; PR creation and merge left as manual human steps.
+2026-08-23 — human opened and merged PR #2 (https://github.com/Swapnil-Ransing/CalTrack_SDD/pull/2) manually. Phase 02 marked shipped; roadmap and progress.md updated directly on main to close out the phase.
